@@ -13,9 +13,12 @@
 	status = "okay";
 };
 
+//Removendo por problema de remoção do node da dtb base
+/*
 &ov5640 {
 	status = "okay";
 };
+*/
 
 &sim2 {
 	status = "disabled";

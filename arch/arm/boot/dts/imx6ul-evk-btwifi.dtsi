@@ -41,9 +41,12 @@
 	};
 };
 
+//Removendo por perda de referência na base
+/*
 &reg_sd1_vmmc {
 	regulator-always-on;
 };
+*/
 
 &usdhc1 {
 	pinctrl-names = "default";
