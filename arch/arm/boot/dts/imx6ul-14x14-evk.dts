@@ -36,14 +36,15 @@
 		};
 	};
 
+	
 	backlight {
 		compatible = "pwm-backlight";
-		//MUDAR PWM PARA PWM2, NO KIT QUEBRA
-		pwms = <&pwm1 0 5000000>;
+		pwms = <&pwm2 0 5000000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 		status = "okay";
 	};
+	
 
 	pxp_v4l2 {
 		compatible = "fsl,imx6ul-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", "fsl,imx6sl-pxp-v4l2";
@@ -294,12 +295,11 @@
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
 
-	/*
+	
 	rtc: pcf85063@68 {
                 compatible = "nxp,pcf85063";
                 reg = <0x51>;
         };
-	*/
 
 };
 
@@ -311,8 +311,6 @@
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 
-	//ADICIONAR TOUCH
-	/*
 	egalax_ts@04 {
                 compatible = "eeti,egalax_ts";
                 reg = <0x04>;
@@ -322,7 +320,6 @@
                 interrupts = <14>;
                 wakeup-gpios = <&gpio2 13 GPIO_ACTIVE_HIGH>;
         };
-	*/
 
 };
 
@@ -476,12 +473,6 @@
 				MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
 				/* used for lcd reset */
 				MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x79
-			>;
-		};
-
-		pinctrl_pwm1: pwm1grp {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO08__PWM1_OUT   0x110b0
 			>;
 		};
 
@@ -662,12 +653,6 @@
 			};
 		};
 	};
-};
-
-&pwm1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm1>;
-	status = "okay";
 };
 
 &pwm2 {
