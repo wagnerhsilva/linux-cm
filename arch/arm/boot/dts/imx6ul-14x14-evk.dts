@@ -38,7 +38,8 @@
 
 	backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pwm2 0 5000000>;
+		//MUDAR PWM PARA PWM2, NO KIT QUEBRA
+		pwms = <&pwm1 0 5000000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 		status = "okay";
@@ -54,7 +55,24 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		//Removendo nodes não usados
+		reg_can_3v3: regulator@0 {
+			compatible = "regulator-fixed";
+			reg = <0>;
+			regulator-name = "can-3v3";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			gpios = <&gpio_spi 3 GPIO_ACTIVE_LOW>;
+		};
+
+		reg_sd1_vmmc: regulator@1 {
+			compatible = "regulator-fixed";
+			regulator-name = "VSD_3V3";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			gpio = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+			enable-active-high;
+		};
+
 		reg_gpio_dvfs: regulator-gpio {
 			compatible = "regulator-gpio";
 			pinctrl-names = "default";
@@ -178,19 +196,19 @@
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 
+	//Incluindo node PMIC
 	pmic: pfuze3000@08 {
                 compatible = "fsl,pfuze3000";
                 reg = <0x08>;
 
                 regulators {
                         sw1a_reg: sw1a {
-                                        regulator-min-microvolt = <700000>;
-                                        regulator-max-microvolt = <3300000>;
-                                        regulator-boot-on;
-                                        regulator-always-on;
-                                        regulator-ramp-delay = <6250>;
+                                regulator-min-microvolt = <700000>;
+                                regulator-max-microvolt = <3300000>;
+                                regulator-boot-on;
+                                regulator-always-on;
+                                regulator-ramp-delay = <6250>;
                         };
-
                         /* use sw1c_reg to align with pfuze100/pfuze200 */
                         sw1c_reg: sw1b {
                                 regulator-min-microvolt = <700000>;
@@ -201,8 +219,8 @@
                         };
 
                         sw2_reg: sw2 {
-                                regulator-min-microvolt = <2500000>;
-                                regulator-max-microvolt = <3300000>;
+                                regulator-min-microvolt = <1500000>;
+                                regulator-max-microvolt = <1850000>;
                                 regulator-boot-on;
                                 regulator-always-on;
                         };
@@ -231,7 +249,7 @@
                                 regulator-always-on;
                         };
 
-                        vgen1_reg: vldo1 {
+			vgen1_reg: vldo1 {
                                 regulator-min-microvolt = <1800000>;
                                 regulator-max-microvolt = <3300000>;
                                 regulator-always-on;
@@ -461,7 +479,13 @@
 			>;
 		};
 
-		//Usando PWM2 do GPIO1_09
+		pinctrl_pwm1: pwm1grp {
+			fsl,pins = <
+				MX6UL_PAD_GPIO1_IO08__PWM1_OUT   0x110b0
+			>;
+		};
+
+		//Adicionando PWM2
 		pinctrl_pwm2: pwm2grp {
 			fsl,pins = <
 				MX6UL_PAD_GPIO1_IO09__PWM2_OUT   0x110b0 //LCD_CNTRST
@@ -640,6 +664,12 @@
 	};
 };
 
+&pwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm1>;
+	status = "okay";
+};
+
 &pwm2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm2>;
@@ -696,6 +726,16 @@
 	status = "okay";
 };
 */
+
+&tsc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_tsc>;
+	xnur-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+	measure-delay-time = <0xffff>;
+	pre-charge-time = <0xfff>;
+	status = "okay";
+};
+
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
