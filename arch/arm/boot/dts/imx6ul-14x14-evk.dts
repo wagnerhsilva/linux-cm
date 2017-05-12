@@ -12,7 +12,7 @@
 #include "imx6ul.dtsi"
 
 / {
-	model = "Freescale i.MX6 UltraLite 14x14 EVK Board";
+	model = "CM Comandos Equalizer";
 	compatible = "fsl,imx6ul-14x14-evk", "fsl,imx6ul";
 
 	chosen {
@@ -45,17 +45,18 @@
 		status = "okay";
 	};
 	
-
+/*
 	pxp_v4l2 {
 		compatible = "fsl,imx6ul-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", "fsl,imx6sl-pxp-v4l2";
 		status = "okay";
 	};
-
+*/
 	regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+/*
 		reg_can_3v3: regulator@0 {
 			compatible = "regulator-fixed";
 			reg = <0>;
@@ -64,6 +65,7 @@
 			regulator-max-microvolt = <3300000>;
 			gpios = <&gpio_spi 3 GPIO_ACTIVE_LOW>;
 		};
+*/
 
 		reg_sd1_vmmc: regulator@1 {
 			compatible = "regulator-fixed";
@@ -87,6 +89,7 @@
 		};
 	};
 
+/*
 	spi4 {
 		compatible = "spi-gpio";
 		pinctrl-names = "default";
@@ -110,7 +113,7 @@
 			spi-max-frequency = <100000>;
 		};
 	};
-
+*/
 };
 
 &cpu0 {
@@ -124,29 +127,19 @@
 	assigned-clock-rates = <786432000>;
 };
 
+/*
 &csi {
 	status = "disabled";
 
 };
-
-/*
-&fec1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_enet1>;
-	phy-mode = "rmii";
-	phy-handle = <&ethphy1>;
-	status = "okay";
-
-
-};
 */
+
 
 &fec1 {
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_enet1>;
         phy-mode = "rmii";
         phy-handle = <&ethphy0>;
-        phy-reset-gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
         status = "okay";
 
         mdio {
@@ -157,31 +150,9 @@
                         compatible = "ethernet-phy-ieee802.3-c22";
                         reg = <1>;
                 };
-/*
-                ethphy1: ethernet-phy@1 {
-                        compatible = "ethernet-phy-ieee802.3-c22";
-                        reg = <1>;
-                };
-*/
         };
 };
 
-//Removendo CAN
-/*
-&flexcan1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_flexcan1>;
-	xceiver-supply = <&reg_can_3v3>;
-	status = "okay";
-};
-
-&flexcan2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_flexcan2>;
-	xceiver-supply = <&reg_can_3v3>;
-	status = "okay";
-};
-*/
 
 &gpc {
 	fsl,cpu_pupscr_sw2iso = <0x1>;
@@ -197,95 +168,18 @@
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 
-	//Incluindo node PMIC
-	pmic: pfuze3000@08 {
-                compatible = "fsl,pfuze3000";
-                reg = <0x08>;
+	mag3110@0e {
+		compatible = "fsl,mag3110";
+		reg = <0x0e>;
+		position = <2>;
+	};
 
-                regulators {
-                        sw1a_reg: sw1a {
-                                regulator-min-microvolt = <700000>;
-                                regulator-max-microvolt = <3300000>;
-                                regulator-boot-on;
-                                regulator-always-on;
-                                regulator-ramp-delay = <6250>;
-                        };
-                        /* use sw1c_reg to align with pfuze100/pfuze200 */
-                        sw1c_reg: sw1b {
-                                regulator-min-microvolt = <700000>;
-                                regulator-max-microvolt = <1475000>;
-                                regulator-boot-on;
-                                regulator-always-on;
-                                regulator-ramp-delay = <6250>;
-                        };
-
-                        sw2_reg: sw2 {
-                                regulator-min-microvolt = <1500000>;
-                                regulator-max-microvolt = <1850000>;
-                                regulator-boot-on;
-                                regulator-always-on;
-                        };
-
-                        sw3a_reg: sw3 {
-                                regulator-min-microvolt = <900000>;
-                                regulator-max-microvolt = <1650000>;
-                                regulator-boot-on;
-                                regulator-always-on;
-                        };
-
-                        swbst_reg: swbst {
-                                regulator-min-microvolt = <5000000>;
-                                regulator-max-microvolt = <5150000>;
-                        };
-
-                        snvs_reg: vsnvs {
-                                regulator-min-microvolt = <1000000>;
-                                regulator-max-microvolt = <3000000>;
-                                regulator-boot-on;
-                                regulator-always-on;
-                        };
-
-                        vref_reg: vrefddr {
-                                regulator-boot-on;
-                                regulator-always-on;
-                        };
-
-			vgen1_reg: vldo1 {
-                                regulator-min-microvolt = <1800000>;
-                                regulator-max-microvolt = <3300000>;
-                                regulator-always-on;
-                        };
-
-                        vgen2_reg: vldo2 {
-                                regulator-min-microvolt = <800000>;
-                                regulator-max-microvolt = <1550000>;
-                        };
-
-                        vgen3_reg: vccsd {
-                                regulator-min-microvolt = <2850000>;
-                                regulator-max-microvolt = <3300000>;
-                                regulator-always-on;
-                        };
-
-			//Mudando valor de V33 para max 3.0, errata NXP (SNVS_LP)
-                        vgen4_reg: v33 {
-                                regulator-min-microvolt = <2850000>;
-                                regulator-max-microvolt = <3000000>;
-                                regulator-always-on;
-                        };
-
-                        vgen5_reg: vldo3 {
-                                regulator-min-microvolt = <1800000>;
-                                regulator-max-microvolt = <3300000>;
-                                regulator-always-on;
-                        };
-
-                        vgen6_reg: vldo4 {
-                                regulator-min-microvolt = <1800000>;
-                                regulator-max-microvolt = <3300000>;
-                                regulator-always-on;
-                        };
-                };
+	fxls8471@1e {
+		compatible = "fsl,fxls8471";
+		reg = <0x1e>;
+		position = <0>;
+		interrupt-parent = <&gpio5>;
+		interrupts = <0 8>;
 	};
 };
 
@@ -332,6 +226,7 @@
 			fsl,pins = <
 				MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00	0x80000000 //INT_RTC,IN
 				MX6UL_PAD_ENET2_TX_DATA0__GPIO2_IO11    0x80000000 //LCD_PWRON,OUT
+/*
 				MX6UL_PAD_SD1_CLK__GPIO2_IO17		0x80000000 //GPIO2_17
 				MX6UL_PAD_SD1_CMD__GPIO2_IO16		0x80000000 //GPIO2_16
 				MX6UL_PAD_SD1_DATA0__GPIO2_IO18		0x80000000 //GPIO2_18
@@ -342,9 +237,11 @@
 				MX6UL_PAD_CSI_DATA01__GPIO4_IO22	0x80000000 //GPIO4_22
 				MX6UL_PAD_CSI_DATA02__GPIO4_IO23	0x80000000 //GPIO4_23
 				MX6UL_PAD_CSI_DATA03__GPIO4_IO24	0x80000000 //GPIO4_24
+*/
 			>;
 		};
 
+/*
 		pinctrl_csi1: csi1grp {
 			fsl,pins = <
 				MX6UL_PAD_CSI_MCLK__CSI_MCLK		0x1b088
@@ -361,7 +258,7 @@
 				MX6UL_PAD_CSI_DATA07__CSI_DATA09	0x1b088
 			>;
 		};
-
+*/
 		pinctrl_dvfs: dvfsgrp {
 			fsl,pins = <
 				MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x79
@@ -380,36 +277,7 @@
 				MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0
 				MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x4001b031
 				MX6UL_PAD_GPIO1_IO06__ENET1_MDIO        0x1b0b0
-                                MX6UL_PAD_GPIO1_IO07__ENET1_MDC         0x1b0b0
-			>;
-		};
-/*
-		pinctrl_enet2: enet2grp {
-                        fsl,pins = <
-                                MX6UL_PAD_ENET2_RX_EN__ENET2_RX_EN      0x1b0b0
-                                MX6UL_PAD_ENET2_RX_ER__ENET2_RX_ER      0x1b0b0
-                                MX6UL_PAD_ENET2_RX_DATA0__ENET2_RDATA00 0x1b0b0
-                                MX6UL_PAD_ENET2_RX_DATA1__ENET2_RDATA01 0x1b0b0
-                                MX6UL_PAD_ENET2_TX_EN__ENET2_TX_EN      0x1b0b0
-                                MX6UL_PAD_ENET2_TX_DATA0__ENET2_TDATA00 0x1b0b0
-                                MX6UL_PAD_ENET2_TX_DATA1__ENET2_TDATA01 0x1b0b0
-                                MX6UL_PAD_ENET2_TX_CLK__ENET2_REF_CLK2  0x4001b031
-                                MX6UL_PAD_GPIO1_IO06__ENET2_MDIO        0x1b0b0
-                                MX6UL_PAD_GPIO1_IO07__ENET2_MDC         0x1b0b0
-                        >;
-                };
-*/
-		pinctrl_flexcan1: flexcan1grp{
-			fsl,pins = <
-				MX6UL_PAD_UART3_RTS_B__FLEXCAN1_RX	0x1b020
-				MX6UL_PAD_UART3_CTS_B__FLEXCAN1_TX	0x1b020
-			>;
-		};
-
-		pinctrl_flexcan2: flexcan2grp{
-			fsl,pins = <
-				MX6UL_PAD_UART2_RTS_B__FLEXCAN2_RX	0x1b020
-				MX6UL_PAD_UART2_CTS_B__FLEXCAN2_TX	0x1b020
+				MX6UL_PAD_GPIO1_IO07__ENET1_MDC         0x1b0b0
 			>;
 		};
 
@@ -483,6 +351,7 @@
 			>;
 		};
 
+/*
 		pinctrl_qspi: qspigrp {
 			fsl,pins = <
 				MX6UL_PAD_NAND_WP_B__QSPI_A_SCLK      0x70a1
@@ -515,7 +384,9 @@
 				MX6UL_PAD_CSI_DATA02__GPIO4_IO23		0x3008
 			>;
 		};
+*/
 
+/*
 		pinctrl_spi4: spi4grp {
 			fsl,pins = <
 				MX6UL_PAD_BOOT_MODE0__GPIO5_IO10	0x70a1
@@ -524,6 +395,7 @@
 				MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x80000000
 			>;
 		};
+*/
 
 		//Usando touch em ENET2
 		pinctrl_tsc: tscgrp {
@@ -541,24 +413,6 @@
 				MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX 0x1b0b1
 				MX6UL_PAD_UART1_RTS_B__UART1_DCE_RTS  0x1b0b1
 				MX6UL_PAD_UART1_CTS_B__UART1_DCE_CTS  0x1b0b1
-			>;
-		};
-
-		pinctrl_uart2: uart2grp {
-			fsl,pins = <
-				MX6UL_PAD_UART2_TX_DATA__UART2_DCE_TX	0x1b0b1
-				MX6UL_PAD_UART2_RX_DATA__UART2_DCE_RX	0x1b0b1
-				MX6UL_PAD_UART3_RX_DATA__UART2_DCE_RTS	0x1b0b1
-				MX6UL_PAD_UART3_TX_DATA__UART2_DCE_CTS	0x1b0b1
-			>;
-		};
-
-		pinctrl_uart2dte: uart2dtegrp {
-			fsl,pins = <
-				MX6UL_PAD_UART2_TX_DATA__UART2_DTE_RX	0x1b0b1
-				MX6UL_PAD_UART2_RX_DATA__UART2_DTE_TX	0x1b0b1
-				MX6UL_PAD_UART3_RX_DATA__UART2_DTE_CTS	0x1b0b1
-				MX6UL_PAD_UART3_TX_DATA__UART2_DTE_RTS	0x1b0b1
 			>;
 		};
 
@@ -655,16 +509,19 @@
 	};
 };
 
+
 &pwm2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm2>;
 	status = "okay";
 };
 
+
 &pxp {
 	status = "okay";
 };
 
+/*
 &qspi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_qspi>;
@@ -680,36 +537,6 @@
 		reg = <0>;
 	};
 };
-
-&sai2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_sai2>;
-
-	assigned-clocks = <&clks IMX6UL_CLK_SAI2_SEL>,
-			  <&clks IMX6UL_CLK_SAI2>;
-	assigned-clock-parents = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
-	assigned-clock-rates = <0>, <12288000>;
-
-	status = "okay";
-};
-
-//Removendo por conflito com GPIO
-/*
-&sim2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_sim2_1>;
-	assigned-clocks = <&clks IMX6UL_CLK_SIM_SEL>;
-	assigned-clock-parents = <&clks IMX6UL_CLK_SIM_PODF>;
-	assigned-clock-rates = <240000000>;
-	//GPIO_ACTIVE_HIGH/LOW:sim card voltage control
-	// NCN8025:Vcc = ACTIVE_HIGH?5V:3V
-	// TDA8035:Vcc = ACTIVE_HIGH?5V:1.8V
-	//
-	pinctrl-assert-gpios = <&gpio4 23 GPIO_ACTIVE_HIGH>;
-	port = <1>;
-	sven_low_active;
-	status = "okay";
-};
 */
 
 &tsc {
@@ -724,16 +551,6 @@
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
-	status = "okay";
-};
-
-&uart2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart2>;
-	fsl,uart-has-rtscts;
-	/* for DTE mode, add below change */
-	/* fsl,dte-mode; */
-	/* pinctrl-0 = <&pinctrl_uart2dte>; */
 	status = "okay";
 };
 
@@ -765,21 +582,6 @@
 &usbphy2 {
 	tx-d-cal = <0x5>;
 };
-
-//Removendo SDCARD1 (conflito com GPIOS)
-/*
-&usdhc1 {
-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-	pinctrl-0 = <&pinctrl_usdhc1>;
-	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
-	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
-	cd-gpios = <&gpio1 19 GPIO_ACTIVE_LOW>;
-	keep-power-in-suspend;
-	enable-sdio-wakeup;
-	vmmc-supply = <&reg_sd1_vmmc>;
-	status = "okay";
-};
-*/
 
 &usdhc2 {
 	pinctrl-names = "default";
